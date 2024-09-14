@@ -257,7 +257,7 @@ namespace HookLibrary {
                 }
             }
             if ((opcodes[i].flags & PLUS_R) && (code[length] & 0xF8) == opcodes[i].opcode) {
-                found_opcode == true;
+                found_opcode = true;
             }
             if (found_opcode) {
                 opcode = code[length++];

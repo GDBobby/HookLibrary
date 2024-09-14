@@ -61,10 +61,11 @@ namespace HookLibrary {
 
 	class Hook {
 	public:
-		enum Flags : uint32_t {
-			Offset_64_Bit = 0x01,
-			Trampoline = 0x02,
-			AllocNearby = 0x04
+		enum Flags : uint8_t {
+
+			Trampoline = 1,
+			PassContext = 2,
+
 		};
 	private:
 		static DisassemblyHandler disassemblyHandler;
@@ -88,6 +89,8 @@ namespace HookLibrary {
 		bool MakeTrampoline();
 
 	public:
+		uint8_t hookID = 0;
+
 		Hook(void* source, void* destination, uint32_t flags);
 		~Hook();
 
@@ -100,6 +103,7 @@ namespace HookLibrary {
 		bool IsInstalled();
 		void Uninstall();
 		void Free();
+		Flags GetFlags() const { return flags; }
 
 		void* ReadDestination();
 		//defined in subhookx86.cpp
@@ -110,7 +114,9 @@ namespace HookLibrary {
 
 			return new Hook(source, destination, flags);
 		}
-
+		static Hook* Create(void* source, void* destination, uint32_t flags) {
+			return new Hook(source, destination, flags);
+		}
 	};
 }
 

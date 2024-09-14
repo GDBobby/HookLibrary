@@ -22,8 +22,9 @@ namespace HookLibrary {
 
 	void Hook::Make_jmp(void* source, void* destination, Hook::Flags flags) {
 #ifdef SUBHOOK_X86_64
-		if ((flags & Hook::Flags::Offset_64_Bit) != 0) {
+		{
 			subhook_jmp64* jmp = reinterpret_cast<subhook_jmp64*>(source);
+
 
 			jmp->push_opcode = PUSH_OPCODE;
 			jmp->push_addr = static_cast<uint32_t>(reinterpret_cast<uint64_t>(destination));
@@ -38,6 +39,8 @@ namespace HookLibrary {
 #endif
 		subhook_jmp32* jmp = reinterpret_cast<subhook_jmp32*>(source);
 		intptr_t src_addr = reinterpret_cast<intptr_t>(source);
+
+
 		intptr_t dst_addr = reinterpret_cast<intptr_t>(destination);
 #ifdef SUBHOOK_X86_64
 		int64_t distance = std::abs(src_addr - dst_addr);
@@ -89,7 +92,7 @@ namespace HookLibrary {
 
 			GetSystemInfo(&sysInfo);
 			pageSize = sysInfo.dwPageSize;
-			
+
 			QWORD pivot = reinterpret_cast<QWORD>(targetAddress) & ~(static_cast<QWORD>(pageSize) - 1);
 
 			void* result;
@@ -137,15 +140,13 @@ namespace HookLibrary {
 	void* FreeCode(void* address, size_t size);
 
 #else
-unsupported, random gibberish to not allow compile
+	unsupported, random gibberish to not allow compile
 #endif
 
 
-	size_t GetJmpSize(Hook::Flags flags) {
+		size_t GetJmpSize(Hook::Flags flags) {
 #ifdef SUBHOOK_X86_64
-		if (flags & Hook::Flags::Offset_64_Bit) {
-			return sizeof(subhook_jmp64);
-		}
+		return sizeof(subhook_jmp64);
 #endif
 		return sizeof(subhook_jmp32);
 	}
@@ -153,7 +154,7 @@ unsupported, random gibberish to not allow compile
 	Hook::Hook(void* source, void* destination, uint32_t flags) :
 		source{ source },
 		destination{ destination },
-		flags{ flags },
+		flags{ static_cast<Flags>(flags) },
 		jmp_size{ GetJmpSize(static_cast<Hook::Flags>(flags)) },
 		trampoline_size{ jmp_size * 2 + MAX_INSN_LEN }
 	{
@@ -162,7 +163,7 @@ unsupported, random gibberish to not allow compile
 		memcpy(code, source, jmp_size);
 		Unprotect(source, jmp_size);
 
-		if (flags & Hook::Flags::Trampoline) {
+		if ((flags & Hook::Flags::Trampoline)) {
 			trampoline = AllocCode(nullptr, trampoline_size);
 			if (!MakeTrampoline()) {
 				printf("failed to make trampoline with AllocCode(nullptr), attempting with AllocCode(source)\n");
@@ -196,7 +197,7 @@ unsupported, random gibberish to not allow compile
 		else {
 			disasm_handler = FirstInstructionDisassembly;
 		}
-		
+
 		while (originalSize < jmp_size) {
 			int reloc_op_offset = 0;
 			insn_len = disasm_handler(reinterpret_cast<void*>(src_addr + originalSize), &reloc_op_offset);
