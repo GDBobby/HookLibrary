@@ -53,7 +53,7 @@ std::vector<HookLibrary::Hook*> hookContainer{};
 int main() {
 	Foo();
 
-	HookLibrary::Redirector::Hook_Simple_Func = HookSimpleController;
+	HookLibrary::Redirector<256>::Hook_Simple_Func = HookSimpleController;
 
 	{ //blocking hook
 		HookLibrary::Hook hook{ reinterpret_cast<void*>(&Foo), reinterpret_cast<void*>(&FuncBlock), 0};
@@ -62,14 +62,14 @@ int main() {
 	Foo();
 	{
 		void* srcPtr = reinterpret_cast<void*>(&Foo);
-		void* dstPtr = reinterpret_cast<void*>(HookLibrary::Redirector::wrapperSimpleFuncs[0]);
+		void* dstPtr = reinterpret_cast<void*>(HookLibrary::Redirector<256>::wrapperSimpleFuncs[0]);
 		uint32_t flags = HookLibrary::Hook::Flags::Trampoline;
 		HookLibrary::Hook hook{
 			srcPtr, 
 			dstPtr, 
 			flags
 		};
-		HookLibrary::Redirector::hooks[0] = &hook;
+		HookLibrary::Redirector<256>::hooks[0] = &hook;
 		printf("before template capture : %zu\n", &hook);
 		Foo();
 		printf("after template capture\n");

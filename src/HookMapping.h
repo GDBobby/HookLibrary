@@ -6,17 +6,19 @@
 #include <array>
 #include <cassert>
 
+#include <functional>
+
 namespace HookLibrary {
 
-	constexpr size_t MAX_HOOK_COUNT = 256;
-
+	template<std::size_t Count>
 	struct Redirector {
-		static Hook* hooks[MAX_HOOK_COUNT]; //start off as null
+		using HookCount = Count;
 
-		//static const void(*wrapperFuncs[HOOK_COUNT])();
-		static const std::array<const void(*)(), MAX_HOOK_COUNT> wrapperSimpleFuncs;
+		static Hook* hooks[HookCount]; //start off as null
 
-		static void(*Hook_Simple_Func)(Hook*);
+		static const std::array<const void(*)(), HookCount> wrapperSimpleFuncs;
+
+		static std::function<void(Hook*)> Hook_Simple_Func;
 	};
 
 	namespace Manager {

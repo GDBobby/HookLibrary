@@ -54,18 +54,13 @@ namespace HookLibrary {
 	//	}
 	//};
 
-	//this is a function pointer??
-	typedef int (SUBHOOK_API* DisassemblyHandler)(
-		void* src,
-		int* reloc_op_offset);
+	typedef int (SUBHOOK_API* DisassemblyHandler)(void* src, int* reloc_op_offset);
 
 	class Hook {
 	public:
 		enum Flags : uint8_t {
-
 			Trampoline = 1,
 			PassContext = 2,
-
 		};
 	private:
 		static DisassemblyHandler disassemblyHandler;
@@ -109,14 +104,6 @@ namespace HookLibrary {
 		//defined in subhookx86.cpp
 		static int FirstInstructionDisassembly(void* source, int* reloc_op_offset);
 		// end defined in subhookx86.cpp
-
-		static Hook* Create(void* source, void* destination, Flags flags) {
-
-			return new Hook(source, destination, flags);
-		}
-		static Hook* Create(void* source, void* destination, uint32_t flags) {
-			return new Hook(source, destination, flags);
-		}
 	};
 }
 

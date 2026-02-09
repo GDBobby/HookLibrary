@@ -25,7 +25,6 @@ namespace HookLibrary {
 		{
 			subhook_jmp64* jmp = reinterpret_cast<subhook_jmp64*>(source);
 
-
 			jmp->push_opcode = PUSH_OPCODE;
 			jmp->push_addr = static_cast<uint32_t>(reinterpret_cast<uint64_t>(destination));
 			jmp->mov_opcode = MOV_OPCODE;
@@ -39,7 +38,6 @@ namespace HookLibrary {
 #endif
 		subhook_jmp32* jmp = reinterpret_cast<subhook_jmp32*>(source);
 		intptr_t src_addr = reinterpret_cast<intptr_t>(source);
-
 
 		intptr_t dst_addr = reinterpret_cast<intptr_t>(destination);
 #ifdef SUBHOOK_X86_64
@@ -65,7 +63,7 @@ namespace HookLibrary {
 #ifdef SUBHOOK_X86_64
 		subhook_jmp64* maybe_jmp64 = reinterpret_cast<subhook_jmp64*>(source);
 
-		if (maybe_jmp64->Correct()) {
+		if (maybe_jmp64->Validate()) {
 			return reinterpret_cast<void*>(maybe_jmp64->push_addr & (static_cast<uintptr_t>(maybe_jmp64->mov_addr) << 32));
 		}
 
